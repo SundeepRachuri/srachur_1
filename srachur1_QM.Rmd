@@ -1,0 +1,118 @@
+---
+title: "srachur1_QMM"
+author: "Sundeep Rachuri"
+date: "2023-09-24"
+output: html_document
+---
+a) Decision variables :
+
+Let J1, K1, and L1 be the quantities of products with large, medium, and small sizes of Plant 1. Let J2, K2, and L2 be the quantities of products with large, medium, and small sizes of Plant 2. Let J3, K3, and L3 be the quantities of products with large, medium, and small sizes of Plant 3.
+
+Linear programming model:
+
+Decision variables = Jx, Kx, Lx
+
+Objective function = Zmax = 420J1+420J2+420J3+360K1+360K2+360K3+300L1+300L2+300L3
+
+Time Constraints:
+
+J1+K1+L1<= 750 (plant 1 spare capacity) 
+J2+K2+L2<= 900 (plant 2 spare capacity)
+J3+K3+L3<= 450 (plant 3 spare capacity)
+
+J1+J2+J3 <= 900 (sales forecast of Large)
+K1+K2+K3<= 1200 (sales forecast of Medium)
+L1+L2+L3 <= 750 (sales forecast of Small)
+
+20J1+15K1+12L1 <= 13000 (storage space in plant 1)
+20J2+15K2+12L2 <= 12000 (storage space in plant 2) 
+20J3+15K3+12L3 <= 5000 (storage space in plant 3)
+
+Jx, Kx, Lx >= 0
+
+Given that each plant should use equal percentage of its production units 900( J1+K1+L1)= 750(J2+K2+L3) 450(J1+K2+L2)=900(J3+K3+L3)
+
+Non-Negativity:-
+Where J1,J2,J3,K1,K2,K3,L1,L2,L3 >=0
+
+The above LP problem constraints can be written as:
+
+J1 + K1 + L1 + 0J2 + 0K2 + 0L2 + 0J3 + 0K3 + 0L3 ≤ 750
+0J1 + 0K1 + 0L1 + J2 + K2 + L2 + 0J3 + 0K3 + 0L3 ≤ 900
+0J1 + 0K1 + 0L1 + 0J2 + 0K2 + 0L2 + J3 + K3 + L3 ≤ 450
+20J1 + 15K1 + 12L1 + 0J2 + 0K2 + 0L2 + 0J3 + 0K3 + 0L3 ≤ 13000 
+0J1 + 0K1 + 0L1 + 20J2 + 15K2 + 12L2 + 0J3 + 0K3 + 0L3 ≤ 12000
+0J1 + 0K1 + 0L1 + 0J2 + 0K2 + 0L2 + 20J3 + 15K3 + 12L3 ≤ 5000
+J1 + 0K1 + 0L1 + J2 + 0K2 + 0L2 + J3 + 0K3 + 0L3 ≤ 900
+0J1 + K1 + 0L1 + 0J2 + K2 + 0L2 + 0J3 + K3 + 0L3 ≤ 1200
+0J1 + 0K1 + L1 + 0J2 + 0K2 + L2 + 0J3 + 0K3 + L3 ≤ 750
+
+J1 + K1 + L1/750 = J2 + K2 + L2 /900 = J3 + K3 + L3/450
+
+900J1 + 900K1 + 900L1 − 750J2 − 750K2 − 750L2 + 0J3 + 0K3 + 0L3 = 0
+0J1 + 0K1 + 0L1 + 450J2 + 450K2 + 450L2 − 900J3 − 900K3 − 900L3 = 0
+450J1 + 450K1 + 450L1 + 0J2 + 0K2 + 0L2 − 750J3 − 750K3 − 750L3 = 0
+
+#Using R to solve LPP
+
+```{r}
+library("lpSolve")
+#using lpSolve library to solve lpp
+Max_z <- c(420,360,300,420,360,300,420,360,300)
+Max_z
+```
+
+```{r}
+Const_ <- matrix(c(1,1,1,0,0,0,0,0,0,
+0,0,0,1,1,1,0,0,0,
+0,0,0,0,0,0,1,1,1,
+20,15,12,0,0,0,0,0,0,
+0,0,0,20,15,12,0,0,0,
+0,0,0,0,0,0,20,15,12,
+1,0,0,1,0,0,1,0,0,
+0,1,0,0,1,0,0,1,0,
+0,0,1,0,0,1,0,0,1,
+900,900,900,-750,-750,-750,0,0,0,
+0,0,0,450,450,450,-900,-900,-900,
+450,450,450,0,0,0,-750,-750,-750),nrow = 12,byrow = TRUE)
+Const_
+```
+```{r}
+direc_ <- c("<=",
+"<=",
+"<=",
+"<=",
+"<=",
+"<=",
+"<=",
+"<=",
+"<=",
+"=",
+"=",
+"=")
+direc_
+```
+```{r}
+R <- c(750,
+900,
+450,
+13000,
+12000,
+5000,
+900,
+1200,
+750,
+0,
+0,
+0)
+```
+
+```{r}
+lp ("max",Max_z,Const_,direc_,R)
+```
+```{r}
+lp("max",Max_z,Const_,direc_,R)$solution
+
+```
+
+
